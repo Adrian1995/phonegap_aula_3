@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Hello World</title>
+</head>
+<body>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+    app.initialize();
+
+    var db = window.openDatabase("Database", "1.0", "agenda", 2000000);
+
+    document.addEventListener("deviceready", onDeviceReady, false);
+    
+    function onDeviceReady(){
+        
+        db.transaction(createDB, errorDB, successDB);
+    }
+
+    function errorDB(err){
+        alert("Erro: "+err);
+    }
+    function successDB(){}
+
+
+
+    //Criar a tabela se a mesma não existir    
+    function createDB(tx){
+        tx.executeSql('CREATE TABLE IF NOT EXISTS agenda (id INTEGER PRIMARY KEY, nome VARCHAR(500), telefone NUM(11) )');            
+    }
+
+
+    //Insere informações no banco de dados
+    function agenda_insert()
+    {
+        db.transaction(agenda_insert_db, errorDB, successDB);
+    }
+    function agenda_insert_db(tx){
+        
+        var nome = $("#agenda_nome").val();
+        var telefone = $("#agenda_telefone").val();
+
+        tx.executeSql('INSERT INTO agenda (nome, telefone) VALUES ("'+ nome +'", "'+ telefone +'")');
+        agenda_view();
+    }
+    
+
+    //Efetua a leitura do banco de dados
+    function agenda_view(){
+        db.transaction(agenda_view_db, errorDB, successDB);
+    }
+    function agenda_view_db(tx){
+        tx.executeSql('SELECT * FROM agenda', [], agenda_view_data, errorDB);
+    }
+    function agenda_view_data(tx, results){
+
+        var len = results.rows.length;
+
+        for (var i=0; i<len; i++){
+            alert("ID = " + results.rows.item(i).id + " Nome: " + results.rows.item(i).nome + " Telefone: " + results.rows.item(i).telefone );
+        }
+    }
+  
+
+    </script>
+    <div class="container">
+    	<div class="row">
+    		<div class="col-md-12">
+    			<h4>Nome</h4>
+    			<input type="text" class="form-control" id="agenda_nome">
+    			<br>
+    			<h4>Telefone</h4>
+    			<input type="text" class="form-control" id="agenda_telefone">
+    			<br>
+    			<br>
+    			<input type="button" class="btn btn-lg btn-primary form-control" value="Inserir" onclick="agenda_insert()">
+    			<br>
+    			<br>
+    		</div>
+    	</div>
+    	<div class="row">
+    		<div class="col-md-12">
+    			<table class="table">
+    				<thead>
+    					<tr>
+    						<th>ID</th>
+    						<th>NOME</th>
+    						<th>TELEFONE</th>
+    						<th>AÇÕES</th>
+    					</tr>
+    				</thead>
+    				<tbody>
+    					<tr>
+    						<td>1</td>
+    						<td>Adrian</td>
+    						<td>11998993366</td>
+    						<td></td>
+    					</tr>
+    					<tr>
+    						<td>2</td>
+    						<td>Adrian</td>
+    						<td>11998993366</td>
+    						<td></td>
+    					</tr>
+    					<tr>
+    						<td>3</td>
+    						<td>Adrian</td>
+    						<td>11998993366</td>
+    						<td></td>
+    					</tr>
+    				</tbody>
+    			</table>
+    		</div>
+    	</div>
+    </div>	
+</body>
+
+</html>
